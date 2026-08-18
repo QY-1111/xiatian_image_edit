@@ -83,6 +83,10 @@ class CopyPoster:
                     "INT",
                     {"default": 0, "min": -240, "max": 240, "step": 1, "tooltip": "账号名纵向偏移，负数向上。"},
                 ),
+                "账号旋转角度": (
+                    "FLOAT",
+                    {"default": 4.0, "min": -20.0, "max": 20.0, "step": 0.5, "tooltip": "账号名倾斜角度，正数表示右侧向上。"},
+                ),
                 "视觉风格": (["清新手绘", "温暖日记", "极简白字"], {"default": "清新手绘"}),
                 "图片宽度": ("INT", {"default": 520, "min": 256, "max": 4096, "step": 8}),
                 "图片高度": ("INT", {"default": 1136, "min": 256, "max": 4096, "step": 8}),
@@ -157,6 +161,7 @@ class CopyPoster:
         author_font_size = 取值("账号字号", "author_font_size", 27)
         author_offset_x = 取值("账号水平偏移", "author_offset_x", 0)
         author_offset_y = 取值("账号垂直偏移", "author_offset_y", 0)
+        author_rotation = 取值("账号旋转角度", "author_rotation", 4.0)
         style = 取值("视觉风格", "style", "清新手绘")
         width = 取值("图片宽度", "width", 520)
         height = 取值("图片高度", "height", 1136)
@@ -191,6 +196,7 @@ class CopyPoster:
             author_font_size=author_font_size,
             author_offset_x=author_offset_x,
             author_offset_y=author_offset_y,
+            author_rotation=author_rotation,
             line_spacing=line_spacing,
             content_width=content_width,
             vertical_position=vertical_position,

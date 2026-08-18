@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, replace
 from functools import lru_cache
+import json
 import math
 import os
 import random
@@ -24,6 +25,7 @@ class PosterOptions:
     author_font_size: int = 27
     author_offset_x: int = 0
     author_offset_y: int = 0
+    author_rotation: float = 4.0
     line_spacing: float = 1.92
     content_width: float = 0.78
     vertical_position: float = 0.51
@@ -74,6 +76,70 @@ def _parse_hex_color(value: str, fallback: tuple[int, int, int, int]) -> tuple[i
     if len(value) != 6 or not re.fullmatch(r"[0-9a-fA-F]{6}", value):
         return fallback
     return tuple(int(value[index : index + 2], 16) for index in (0, 2, 4)) + (255,)
+
+
+def _extract_copy_text(value: str) -> str:
+    """Extract the copy string when an upstream node supplies a JSON payload."""
+    if not isinstance(value, str):
+        return str(value)
+
+    candidate = value.strip()
+    if candidate.startswith("```"):
+        lines = candidate.splitlines()
+        if lines and lines[0].strip().lower() in {"```", "```json"}:
+            lines = lines[1:]
+        if lines and lines[-1].strip() == "```":
+            lines = lines[:-1]
+        candidate = "\n".join(lines).strip()
+
+    try:
+        payload = json.loads(candidate)
+    except (json.JSONDecodeError, TypeError):
+        return value
+
+    if isinstance(payload, str):
+        return payload
+    if isinstance(payload, dict):
+        for key in ("text", "文案内容", "文案", "content"):
+            text_value = payload.get(key)
+            if isinstance(text_value, str):
+                return text_value
+    return value
+
+
+def _draw_rotated_text(
+    layer: Image.Image,
+    text: str,
+    font: ImageFont.ImageFont,
+    fill,
+    center: tuple[float, float],
+    angle: float,
+    stroke_width: int,
+    stroke_fill,
+) -> None:
+    """Draw text around a stable visual center with antialiased rotation."""
+    probe = ImageDraw.Draw(Image.new("L", (1, 1), 0))
+    bbox = probe.textbbox((0, 0), text, font=font, stroke_width=stroke_width)
+    pad = max(4, stroke_width + 4)
+    patch = Image.new(
+        "RGBA",
+        (max(1, bbox[2] - bbox[0] + pad * 2), max(1, bbox[3] - bbox[1] + pad * 2)),
+        (0, 0, 0, 0),
+    )
+    patch_draw = ImageDraw.Draw(patch)
+    patch_draw.text(
+        (pad - bbox[0], pad - bbox[1]),
+        text,
+        font=font,
+        fill=fill,
+        stroke_width=stroke_width,
+        stroke_fill=stroke_fill,
+    )
+    if abs(angle) > 0.01:
+        patch = patch.rotate(angle, resample=Image.Resampling.BICUBIC, expand=True)
+    x = round(center[0] - patch.width / 2)
+    y = round(center[1] - patch.height / 2)
+    layer.alpha_composite(patch, (x, y))
 
 
 FONT_CANDIDATES_BOLD = [
@@ -483,9 +549,11 @@ def _draw_social_ui(
 
     top_y = h * .098
     _draw_people_icon(draw, w * .062, top_y, scale, white)
-    _draw_camera_icon(draw, w * .785, top_y, scale, white)
+    _draw_camera_icon(draw, w * .785, top_y + 1.5 * scale, scale, white)
     top_font = _font(max(round(20 * scale), 12), False)
-    draw.text((w * .835, top_y - 11 * scale), top_label, font=top_font, fill=white)
+    top_bbox = draw.textbbox((0, 0), top_label, font=top_font)
+    top_text_y = top_y - (top_bbox[1] + top_bbox[3]) / 2
+    draw.text((w * .835, top_text_y), top_label, font=top_font, fill=white)
 
     side_x = w * .927
     _circle_avatar(layer, avatar, side_x, h * .722, 29 * scale, palette, scale)
@@ -562,9 +630,9 @@ def render_copy_poster(
     base_font_size = round(options.font_size * aa * options.width / 720)
     font_size = max(round(16 * aa), base_font_size)
 
-    # Respect manual newlines, while wrapping overlong lines by visual width.
-    # Accept real newlines as well as the frequently supplied literal `/n` form.
-    normalized_text = text.replace("\r\n", "\n").replace("\r", "\n").replace("/n", "\n")
+    # Extract a JSON `text` field first, then normalize supported newline forms.
+    copy_text = _extract_copy_text(text)
+    normalized_text = copy_text.replace("\r\n", "\n").replace("\r", "\n").replace("/n", "\n")
     raw_paragraphs = normalized_text.split("\n")
     temp_draw = ImageDraw.Draw(Image.new("RGB", (4, 4)))
 
@@ -621,7 +689,21 @@ def render_copy_poster(
     draw.text((group_x + (group_width - heading_width) / 2, heading_y), heading, font=heading_font, fill=palette["text"], stroke_width=max(1, round(scale)), stroke_fill=(0, 0, 0, 100))
     author_x = group_x + (group_width - author_width) / 2 + options.author_offset_x * ui_scale
     author_y = heading_y + font_size * .95 + options.author_offset_y * ui_scale
-    draw.text((author_x, author_y), author, font=author_font, fill=palette["author"], stroke_width=max(1, round(scale)), stroke_fill=(0, 0, 0, 100))
+    author_bbox = draw.textbbox((0, 0), author, font=author_font, stroke_width=max(1, round(scale)))
+    author_center = (
+        author_x + author_width / 2,
+        author_y + (author_bbox[1] + author_bbox[3]) / 2,
+    )
+    _draw_rotated_text(
+        layer,
+        author,
+        author_font,
+        palette["author"],
+        author_center,
+        options.author_rotation,
+        max(1, round(scale)),
+        (0, 0, 0, 100),
+    )
 
     y = start_y
     all_highlights = []
