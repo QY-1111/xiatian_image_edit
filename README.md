@@ -14,7 +14,19 @@
 
 ## 安装
 
-将 `comfyui_copy_poster` 文件夹复制到：
+支持两种安装方式：
+
+### Git 安装
+
+在 `ComfyUI/custom_nodes` 下执行：
+
+```bash
+git clone https://github.com/QY-1111/xiatian_image_edit.git
+```
+
+### ZIP 安装
+
+将压缩包内的 `comfyui_copy_poster` 文件夹复制到：
 
 ```text
 ComfyUI/custom_nodes/comfyui_copy_poster
@@ -23,4 +35,3 @@ ComfyUI/custom_nodes/comfyui_copy_poster
 重启 ComfyUI，搜索节点 **文案海报 · Copy Poster**。
 
 详细参数请查看 [插件说明](comfyui_copy_poster/README.md)。
-
