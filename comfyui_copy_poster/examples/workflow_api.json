@@ -1,0 +1,46 @@
+{
+  "1": {
+    "inputs": {
+      "text": "在这个夏天\n你记录下了孩子的笑脸\n[[海边的风]]\n还有[[孩子慢慢长大]]的背影\n原来夏天最动人的部分\n就是这些被认真爱着的瞬间",
+      "heading": "亲爱的",
+      "author": "@amoy TINA",
+      "author_color": "#FFF06A",
+      "author_font_size": 27,
+      "author_offset_x": 0,
+      "author_offset_y": 0,
+      "style": "清新手绘",
+      "width": 520,
+      "height": 1136,
+      "font_size": 43,
+      "highlight_color": "#FFE08A",
+      "line_spacing": 1.92,
+      "content_width": 0.78,
+      "vertical_position": 0.51,
+      "darkness": 0.48,
+      "show_border": true,
+      "show_doodles": true,
+      "show_app_ui": true,
+      "top_label": "发日常",
+      "footer_username": "@不爱之王",
+      "footer_tag": "日常",
+      "seed": 1257
+    },
+    "class_type": "CopyPoster",
+    "_meta": {
+      "title": "文案海报 · Copy Poster"
+    }
+  },
+  "2": {
+    "inputs": {
+      "filename_prefix": "copy_poster",
+      "images": [
+        "1",
+        0
+      ]
+    },
+    "class_type": "SaveImage",
+    "_meta": {
+      "title": "保存图像"
+    }
+  }
+}
