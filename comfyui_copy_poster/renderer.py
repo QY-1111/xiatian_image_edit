@@ -323,7 +323,6 @@ def _draw_centered_runs(
             font=font,
             fill=fill,
             stroke_width=stroke_width,
-            stroke_fill=(0, 0, 0, 125),
         )
         mask_draw.text((x, y), text, font=font, fill=255, stroke_width=stroke_width, stroke_fill=255)
         run_width = draw.textlength(text, font=font)
@@ -686,10 +685,11 @@ def render_copy_poster(
     author_width = draw.textlength(author, font=author_font)
     group_width = max(heading_width, author_width)
     group_x = w / 2 - group_width / 2
-    draw.text((group_x + (group_width - heading_width) / 2, heading_y), heading, font=heading_font, fill=palette["text"], stroke_width=max(1, round(scale)), stroke_fill=(0, 0, 0, 100))
+    text_stroke_width = 0
+    draw.text((group_x + (group_width - heading_width) / 2, heading_y), heading, font=heading_font, fill=palette["text"])
     author_x = group_x + (group_width - author_width) / 2 + options.author_offset_x * ui_scale
     author_y = heading_y + font_size * .95 + options.author_offset_y * ui_scale
-    author_bbox = draw.textbbox((0, 0), author, font=author_font, stroke_width=max(1, round(scale)))
+    author_bbox = draw.textbbox((0, 0), author, font=author_font, stroke_width=text_stroke_width)
     author_center = (
         author_x + author_width / 2,
         author_y + (author_bbox[1] + author_bbox[3]) / 2,
@@ -701,13 +701,13 @@ def render_copy_poster(
         palette["author"],
         author_center,
         options.author_rotation,
-        max(1, round(scale)),
-        (0, 0, 0, 100),
+        text_stroke_width,
+        (0, 0, 0, 0),
     )
 
     y = start_y
     all_highlights = []
-    stroke_width = max(1, round(1.15 * scale))
+    stroke_width = text_stroke_width
     for line in lines:
         if line:
             _, highlight_boxes = _draw_centered_runs(
