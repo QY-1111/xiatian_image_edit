@@ -36,7 +36,7 @@ class CopyPoster:
     def INPUT_TYPES(cls):
         return {
             "required": {
-                "text": (
+                "文案内容": (
                     "STRING",
                     {
                         "default": DEFAULT_COPY,
@@ -45,7 +45,7 @@ class CopyPoster:
                         "tooltip": "每个换行是一个文案段落；用 [[文字]] 标出高亮内容。",
                     },
                 ),
-                "heading": (
+                "顶部称呼": (
                     "STRING",
                     {
                         "default": "亲爱的",
@@ -53,7 +53,7 @@ class CopyPoster:
                         "dynamicPrompts": False,
                     },
                 ),
-                "author": (
+                "账号名称": (
                     "STRING",
                     {
                         "default": "@amoy TINA",
@@ -62,7 +62,7 @@ class CopyPoster:
                         "tooltip": "正文上方的账号名，例如 @amoy TINA。",
                     },
                 ),
-                "author_color": (
+                "账号颜色": (
                     "STRING",
                     {
                         "default": "#FFF06A",
@@ -71,23 +71,23 @@ class CopyPoster:
                         "tooltip": "账号名颜色，支持 #RRGGBB。",
                     },
                 ),
-                "author_font_size": (
+                "账号字号": (
                     "INT",
                     {"default": 27, "min": 10, "max": 120, "step": 1, "tooltip": "账号名字号。"},
                 ),
-                "author_offset_x": (
+                "账号水平偏移": (
                     "INT",
                     {"default": 0, "min": -240, "max": 240, "step": 1, "tooltip": "账号名横向偏移，负数向左。"},
                 ),
-                "author_offset_y": (
+                "账号垂直偏移": (
                     "INT",
                     {"default": 0, "min": -240, "max": 240, "step": 1, "tooltip": "账号名纵向偏移，负数向上。"},
                 ),
-                "style": (["清新手绘", "温暖日记", "极简白字"], {"default": "清新手绘"}),
-                "width": ("INT", {"default": 520, "min": 256, "max": 4096, "step": 8}),
-                "height": ("INT", {"default": 1136, "min": 256, "max": 4096, "step": 8}),
-                "font_size": ("INT", {"default": 43, "min": 16, "max": 180, "step": 1}),
-                "highlight_color": (
+                "视觉风格": (["清新手绘", "温暖日记", "极简白字"], {"default": "清新手绘"}),
+                "图片宽度": ("INT", {"default": 520, "min": 256, "max": 4096, "step": 8}),
+                "图片高度": ("INT", {"default": 1136, "min": 256, "max": 4096, "step": 8}),
+                "正文字号": ("INT", {"default": 43, "min": 16, "max": 180, "step": 1}),
+                "高光颜色": (
                     "STRING",
                     {
                         "default": "#FFE08A",
@@ -96,43 +96,43 @@ class CopyPoster:
                         "tooltip": "重点文字与下划线颜色，支持 #RRGGBB，例如 #FFE08A。",
                     },
                 ),
-                "line_spacing": ("FLOAT", {"default": 1.92, "min": 1.0, "max": 3.0, "step": 0.05}),
-                "content_width": ("FLOAT", {"default": 0.78, "min": 0.45, "max": 0.94, "step": 0.01}),
-                "vertical_position": ("FLOAT", {"default": 0.51, "min": 0.25, "max": 0.75, "step": 0.01}),
-                "darkness": ("FLOAT", {"default": 0.48, "min": 0.0, "max": 0.9, "step": 0.01}),
-                "show_border": ("BOOLEAN", {"default": True}),
-                "show_doodles": ("BOOLEAN", {"default": True}),
-                "show_app_ui": (
+                "行间距": ("FLOAT", {"default": 1.92, "min": 1.0, "max": 3.0, "step": 0.05}),
+                "文案宽度比例": ("FLOAT", {"default": 0.78, "min": 0.45, "max": 0.94, "step": 0.01}),
+                "文案垂直位置": ("FLOAT", {"default": 0.51, "min": 0.25, "max": 0.75, "step": 0.01}),
+                "背景压暗强度": ("FLOAT", {"default": 0.48, "min": 0.0, "max": 0.9, "step": 0.01}),
+                "显示手绘边框": ("BOOLEAN", {"default": True}),
+                "显示装饰图案": ("BOOLEAN", {"default": True}),
+                "显示界面图标": (
                     "BOOLEAN",
                     {"default": True, "tooltip": "模拟状态栏、侧边按钮、作者信息和底部导航。"},
                 ),
-                "top_label": (
+                "右上角文字": (
                     "STRING",
                     {"default": "发日常", "multiline": False, "dynamicPrompts": False},
                 ),
-                "footer_username": (
+                "底部用户名": (
                     "STRING",
                     {"default": "@不爱之王", "multiline": False, "dynamicPrompts": False},
                 ),
-                "footer_tag": (
+                "底部标签": (
                     "STRING",
                     {"default": "日常", "multiline": False, "dynamicPrompts": False},
                 ),
-                "seed": ("INT", {"default": 1257, "min": 0, "max": 0xFFFFFFFF}),
+                "随机种子": ("INT", {"default": 1257, "min": 0, "max": 0xFFFFFFFF}),
             },
             "optional": {
-                "highlight_color_input": (
+                "高光颜色输入": (
                     "STRING",
                     {
                         "forceInput": True,
-                        "tooltip": "文案高光颜色输入槽。连接 #RRGGBB 字符串后，会覆盖节点中的 highlight_color。",
+                        "tooltip": "文案高光颜色输入槽。连接 #RRGGBB 字符串后，会覆盖节点中的高光颜色。",
                     },
                 ),
-                "background_image": (
+                "背景图片": (
                     "IMAGE",
                     {"tooltip": "可选。未连接时使用节点自带的渐变背景。"},
                 ),
-                "avatar_image": (
+                "头像图片": (
                     "IMAGE",
                     {"tooltip": "可选。用于右侧圆形头像；未连接时绘制通用头像。"},
                 ),
@@ -140,40 +140,43 @@ class CopyPoster:
         }
 
     RETURN_TYPES = ("IMAGE", "MASK")
-    RETURN_NAMES = ("image", "text_mask")
+    RETURN_NAMES = ("成品图片", "文字遮罩")
     FUNCTION = "render"
     CATEGORY = "图像/文案排版"
     DESCRIPTION = "将多行文案渲染为竖版社交媒体风格海报。[[双中括号]] 内的文字会高亮。"
 
-    def render(
-        self,
-        text: str,
-        heading: str,
-        author: str,
-        author_color: str,
-        author_font_size: int,
-        author_offset_x: int,
-        author_offset_y: int,
-        style: str,
-        width: int,
-        height: int,
-        font_size: int,
-        highlight_color: str,
-        line_spacing: float,
-        content_width: float,
-        vertical_position: float,
-        darkness: float,
-        show_border: bool,
-        show_doodles: bool,
-        show_app_ui: bool,
-        top_label: str,
-        footer_username: str,
-        footer_tag: str,
-        seed: int,
-        highlight_color_input: str | None = None,
-        background_image: torch.Tensor | None = None,
-        avatar_image: torch.Tensor | None = None,
-    ):
+    def render(self, **参数):
+        """Use Chinese widget names while accepting legacy English API keys."""
+        def 取值(中文名, 英文名, 默认值=None):
+            return 参数[中文名] if 中文名 in 参数 else 参数.get(英文名, 默认值)
+
+        text = 取值("文案内容", "text", DEFAULT_COPY)
+        heading = 取值("顶部称呼", "heading", "亲爱的")
+        author = 取值("账号名称", "author", "@amoy TINA")
+        author_color = 取值("账号颜色", "author_color", "#FFF06A")
+        author_font_size = 取值("账号字号", "author_font_size", 27)
+        author_offset_x = 取值("账号水平偏移", "author_offset_x", 0)
+        author_offset_y = 取值("账号垂直偏移", "author_offset_y", 0)
+        style = 取值("视觉风格", "style", "清新手绘")
+        width = 取值("图片宽度", "width", 520)
+        height = 取值("图片高度", "height", 1136)
+        font_size = 取值("正文字号", "font_size", 43)
+        highlight_color = 取值("高光颜色", "highlight_color", "#FFE08A")
+        line_spacing = 取值("行间距", "line_spacing", 1.92)
+        content_width = 取值("文案宽度比例", "content_width", 0.78)
+        vertical_position = 取值("文案垂直位置", "vertical_position", 0.51)
+        darkness = 取值("背景压暗强度", "darkness", 0.48)
+        show_border = 取值("显示手绘边框", "show_border", True)
+        show_doodles = 取值("显示装饰图案", "show_doodles", True)
+        show_app_ui = 取值("显示界面图标", "show_app_ui", True)
+        top_label = 取值("右上角文字", "top_label", "发日常")
+        footer_username = 取值("底部用户名", "footer_username", "@不爱之王")
+        footer_tag = 取值("底部标签", "footer_tag", "日常")
+        seed = 取值("随机种子", "seed", 1257)
+        highlight_color_input = 取值("高光颜色输入", "highlight_color_input")
+        background_image = 取值("背景图片", "background_image")
+        avatar_image = 取值("头像图片", "avatar_image")
+
         resolved_highlight_color = (
             highlight_color_input.strip()
             if isinstance(highlight_color_input, str) and highlight_color_input.strip()

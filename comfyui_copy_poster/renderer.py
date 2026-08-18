@@ -11,6 +11,9 @@ from typing import Iterable
 from PIL import Image, ImageDraw, ImageEnhance, ImageFilter, ImageFont
 
 
+BUNDLED_FONT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "fonts", "NotoSansSC-VariableFont_wght.ttf")
+
+
 @dataclass(frozen=True)
 class PosterOptions:
     width: int = 520
@@ -75,6 +78,7 @@ def _parse_hex_color(value: str, fallback: tuple[int, int, int, int]) -> tuple[i
 
 FONT_CANDIDATES_BOLD = [
     os.environ.get("COPY_POSTER_FONT", ""),
+    BUNDLED_FONT,
     "C:/Windows/Fonts/msyhbd.ttc",
     "C:/Windows/Fonts/msyhbd.ttf",
     "C:/Windows/Fonts/simhei.ttf",
@@ -88,6 +92,7 @@ FONT_CANDIDATES_BOLD = [
 
 FONT_CANDIDATES_REGULAR = [
     os.environ.get("COPY_POSTER_FONT", ""),
+    BUNDLED_FONT,
     "C:/Windows/Fonts/msyh.ttc",
     "C:/Windows/Fonts/msyh.ttf",
     "C:/Windows/Fonts/simhei.ttf",
@@ -104,7 +109,17 @@ def _font(size: int, bold: bool = True) -> ImageFont.FreeTypeFont | ImageFont.Im
     for path in candidates:
         if path and os.path.isfile(path):
             try:
-                return ImageFont.truetype(path, size=size)
+                font = ImageFont.truetype(path, size=size)
+                if os.path.normcase(os.path.abspath(path)) == os.path.normcase(os.path.abspath(BUNDLED_FONT)):
+                    variation_name = "Bold" if bold else "Regular"
+                    try:
+                        font.set_variation_by_name(variation_name)
+                    except (AttributeError, OSError):
+                        try:
+                            font.set_variation_by_axes([700 if bold else 400])
+                        except (AttributeError, OSError):
+                            pass
+                return font
             except OSError:
                 continue
     try:
