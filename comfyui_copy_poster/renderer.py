@@ -473,21 +473,37 @@ def _draw_camera_icon(draw: ImageDraw.ImageDraw, cx: float, cy: float, scale: fl
 
 
 def _draw_status_icons(draw: ImageDraw.ImageDraw, w: int, h: int, scale: float, color) -> None:
-    sw = max(2, round(2.0 * scale))
+    sw = max(2, round(3.0 * scale))
     base_x = w * .716
-    base_y = h * .039
-    for index, bar_h in enumerate((5, 9, 14, 19)):
+    base_y = h * .041
+    for index, bar_h in enumerate((5, 9, 13, 17)):
         x = base_x + index * 7 * scale
         draw.rounded_rectangle((x, base_y - bar_h * scale, x + 4 * scale, base_y), radius=2 * scale, fill=color)
 
     wifi_x = w * .806
-    wifi_y = h * .036
-    for inset in (0, 6 * scale):
-        draw.arc((wifi_x - 13 * scale + inset, wifi_y - 13 * scale + inset, wifi_x + 13 * scale - inset, wifi_y + 13 * scale - inset), 215, 325, fill=color, width=sw)
-    draw.ellipse((wifi_x - 2 * scale, wifi_y + 4 * scale, wifi_x + 2 * scale, wifi_y + 8 * scale), fill=color)
+    wifi_y = h * .0365
+    outer_r = 11 * scale
+    inner_r = 6.5 * scale
+    draw.arc(
+        (wifi_x - outer_r, wifi_y - outer_r, wifi_x + outer_r, wifi_y + outer_r),
+        210,
+        330,
+        fill=color,
+        width=sw,
+    )
+    draw.arc(
+        (wifi_x - inner_r, wifi_y - inner_r, wifi_x + inner_r, wifi_y + inner_r),
+        215,
+        325,
+        fill=color,
+        width=sw,
+    )
+    dot_r = 2.2 * scale
+    dot_y = wifi_y + 3.7 * scale
+    draw.ellipse((wifi_x - dot_r, dot_y - dot_r, wifi_x + dot_r, dot_y + dot_r), fill=color)
 
-    bx, by = w * .850, h * .024
-    bw, bh = 34 * scale, 16 * scale
+    bx, by = w * .850, h * .028
+    bw, bh = 31 * scale, 14 * scale
     draw.rounded_rectangle((bx, by, bx + bw, by + bh), radius=5 * scale, outline=color, width=sw)
     draw.rounded_rectangle((bx + 3 * scale, by + 3 * scale, bx + bw - 4 * scale, by + bh - 3 * scale), radius=3 * scale, fill=color)
     draw.rounded_rectangle((bx + bw + 2 * scale, by + 5 * scale, bx + bw + 5 * scale, by + bh - 5 * scale), radius=1.5 * scale, fill=color)
